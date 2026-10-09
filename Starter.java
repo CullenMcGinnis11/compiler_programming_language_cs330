@@ -9,9 +9,10 @@ public class Starter {
 		
 		//put the code test case in string code
 		String code = """
-	            Pokemon pokemon1 = Pokemon("./Pokemons/1.txt");
-	            String name = "";
-	            pokemon1.hp = pokemon1.hp + 150;
+				!=
+	            Pokemon pokemon1 = Pokemon("./Pokemons/1.txt"); ==
+	            String name = ""; // || == & &&
+	            pokemon1.hp = pokemon1.hp + 150; ! !=
 	            if(pokemon1.hp < 0) { print "Lost"; }
 	            pokemon1 move1 pokemon2;
 	            """;
