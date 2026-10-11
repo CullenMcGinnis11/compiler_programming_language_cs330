@@ -13,9 +13,8 @@ import java.lang.StringBuilder;
 public class Tokenizer {
 
 	public static List<Token> tokenize(String code) {
-		// init the array list for storing the tokens
 		List<Token> tokens = new ArrayList<>();
-		System.out.println("Code: " + code);
+		// Create patterns for each type of word
 		String startWord = "\\w*";
 		Pattern ptStartWord = Pattern.compile(startWord);
 		String identifier = "[A-Za-z_]\\w*";
@@ -24,10 +23,10 @@ public class Tokenizer {
 		Pattern ptInvalidIdentifier = Pattern.compile(invalidIdentifier);
 		String integer = "[1-9][1-9]*";
 		Pattern ptInteger = Pattern.compile(integer);
-		char[] symbolList = new char[22]; // List to encapsulate all symbols
+		// List to encapsulate all symbols
+		char[] symbolList = new char[22];
 		symbolList[0] = (char) (33);
 		symbolList[1] = (char) (34);
-
 		for (int i = 0; i < 10; i++) { // 33, 34, [38, 48] // 11
 			symbolList[i + 2] = (char) (i + 38);
 		}
@@ -40,36 +39,30 @@ public class Tokenizer {
 		for (int i = 0; i < 3; i++) { // 123, 124, 125
 			symbolList[i + 19] = (char) (i + 123);
 		}
-		System.out.println(Arrays.toString(symbolList));
-
+		// Create booleans for various different identifications
 		boolean isSymbol = false;
-
+		boolean secondCharNotUsed = false;
+		boolean secondCharGrabbed = false;
 		try {
-			// FileReader Class used
 			StringReader stringReader = new StringReader(code);
 			int character = 0;
 			int nextChar = 0;
 			int line = 1;
-			boolean secondCharNotUsed = false;
-			boolean secondCharGrabbed = false;
-
 			while (true) {
 				isSymbol = false;
 				if (!secondCharGrabbed) {
 					character = stringReader.read();
 				}
 				if (secondCharGrabbed && !secondCharNotUsed) {
-					System.out.println("Tripped Second char has been used! Second Char is: " + (char) nextChar);
 					character = stringReader.read(); // Because the second char has indeed been used up
 					secondCharGrabbed = false;
 				}
 				if (secondCharGrabbed && secondCharNotUsed) {
-					System.out.println("Switched " + (char) nextChar);
 					character = nextChar;
 					secondCharGrabbed = false; // because we now have not grabbed any second char
 					secondCharNotUsed = false;
 				}
-				if (character == '\n') { // check new line
+				if (character == '\n') { // check new line, if new line add to line
 					line++;
 				}
 				for (char symbol : symbolList) {
@@ -81,7 +74,7 @@ public class Tokenizer {
 					if (character == '=' || character == '|' || character == '&' || character == '!'
 							|| character == '<' || character == '>' || character == '/') { // all operators where you
 																							// might need something
-						// after it
+																							// after it
 						if (!secondCharNotUsed) {
 							nextChar = stringReader.read(); // TODO could maybe have this flip a boolean so it lets the
 															// compiler know to look at next character
@@ -159,11 +152,7 @@ public class Tokenizer {
 						tokens.add(new Token("Punctuator", Character.toString((char) character)));
 						secondCharGrabbed = false;
 					}
-				} else if (ptStartWord.matcher(Character.toString((char) character)).matches()) { // down path if could
-					// classify as an
-					// identifier, TODO need to
-					// grab all the letters in
-					// the word
+				} else if (ptStartWord.matcher(Character.toString((char) character)).matches()) { 
 					StringBuilder wordtest = new StringBuilder();
 					StringBuilder word = new StringBuilder();
 					word.append((char) character);
@@ -171,11 +160,8 @@ public class Tokenizer {
 					nextChar = stringReader.read();
 					while (ptStartWord.matcher(wordtest.append((char) nextChar)).matches()) {
 						word.append((char) nextChar);
-						System.out.println(word);
 						nextChar = stringReader.read();
 					}
-					System.out.println();
-					System.out.println("Word put in is " + word + ", " + line);
 
 					if (word.toString().equals("boolean")
 							|| word.toString().equals("function")
@@ -202,7 +188,7 @@ public class Tokenizer {
 							|| word.toString().equals("Pokemon")) {
 						tokens.add(new Token("Keyword", word.toString()));
 					} else if (ptInvalidIdentifier.matcher(word).matches()) {
-						System.out.println("INVALID TOKEN " + word + " > ABORTING");
+						System.out.println("INVALID TOKEN " + word + " > ABORTING: Occured on line " + line);
 						break;
 					} else if (ptIdentifier.matcher(word).matches()){
 						tokens.add(new Token("Identifier", word.toString()));
