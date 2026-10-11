@@ -9,12 +9,14 @@ public class Starter {
 		
 		//put the code test case in string code
 		String code = """
-				!=
+				// ; ; - - 19invalid
 	            Pokemon pokemon1 = Pokemon("./Pokemons/1.txt"); ==
-	            String name = ""; // || == & &&
-	            pokemon1.hp = pokemon1.hp + 150; ! !=
+	            String name = ""; || == & &&  //32invalid
+	            pokemon1.hp = pokemon1.hp + 150; ! != int
 	            if(pokemon1.hp < 0) { print "Lost"; }
 	            pokemon1 move1 pokemon2;
+				int movie = 100;
+				String somebodyToldMe = "String Example";
 	            """;
 		
 		//init the arraylist for tokens and pass the code into the tokenizer
