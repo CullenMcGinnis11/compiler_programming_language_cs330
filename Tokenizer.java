@@ -1,6 +1,4 @@
-package Tokenizer;
 
-import java.io.BufferedReader;
 import java.io.StringReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -72,9 +70,12 @@ public class Tokenizer {
 				}
 				if (isSymbol) {
 					if (character == '=' || character == '|' || character == '&' || character == '!'
-							|| character == '<' || character == '>' || character == '/') { // all operators where you
-																							// might need something
-																							// after it
+							|| character == '<' || character == '>' || character == '/' || character == '"') { // all
+																												// operators
+																												// where
+																												// you
+						// might need something
+						// after it
 						if (!secondCharNotUsed) {
 							nextChar = stringReader.read(); // TODO could maybe have this flip a boolean so it lets the
 															// compiler know to look at next character
@@ -86,7 +87,7 @@ public class Tokenizer {
 										.concat(Character.toString((char) nextChar))));
 							} else {
 								tokens.add(new Token("Comparison Operator", Character.toString((char) character)));
-								
+
 								secondCharNotUsed = true;
 								continue;
 							}
@@ -102,17 +103,33 @@ public class Tokenizer {
 								secondCharNotUsed = true;
 								continue;
 							}
+						} else if (character == '"') {
+							StringBuilder stringWord = new StringBuilder();
+							stringWord.append((char) character);
+							while (nextChar != '"' && nextChar != -1) {
+								stringWord.append((char) nextChar);
+								nextChar = stringReader.read();
+							}
+
+							if (nextChar == -1) {
+								System.out.println("String started but not ended!");
+								break;
+							}
+							stringWord.append((char) nextChar);
+							tokens.add(new Token("String", stringWord.toString()));
+							secondCharNotUsed = false;
+							continue;
 						} else if (nextChar == character || (character == '!' && nextChar == '=')) {
 							tokens.add(new Token("Boolean Operator",
 									Character.toString((char) character).concat(Character.toString((char) nextChar))));
 						} else if (character != '=') {
 							tokens.add(new Token("Boolean Operator", Character.toString((char) character)));
-							
+
 							secondCharNotUsed = true;
 							continue;
 						} else if (character == '=') {
 							tokens.add(new Token("Operator", Character.toString((char) character)));
-							
+
 							secondCharNotUsed = true;
 							continue;
 						} else if (character == '!') {
@@ -121,7 +138,7 @@ public class Tokenizer {
 										.concat(Character.toString((char) nextChar))));
 							} else {
 								tokens.add(new Token("Boolean Operator", Character.toString((char) character)));
-								
+
 								secondCharNotUsed = true;
 								continue;
 							}
@@ -129,7 +146,6 @@ public class Tokenizer {
 						continue;
 					} else if (character == '(' // all operators where it cant be anything but just the single element
 							|| character == ')'
-							|| character == '"'
 							|| character == '['
 							|| character == ']'
 							|| character == '{'
@@ -152,7 +168,7 @@ public class Tokenizer {
 						tokens.add(new Token("Punctuator", Character.toString((char) character)));
 						secondCharGrabbed = false;
 					}
-				} else if (ptStartWord.matcher(Character.toString((char) character)).matches()) { 
+				} else if (ptStartWord.matcher(Character.toString((char) character)).matches()) {
 					StringBuilder wordtest = new StringBuilder();
 					StringBuilder word = new StringBuilder();
 					word.append((char) character);
@@ -190,9 +206,9 @@ public class Tokenizer {
 					} else if (ptInvalidIdentifier.matcher(word).matches()) {
 						System.out.println("INVALID TOKEN " + word + " > ABORTING: Occured on line " + line);
 						break;
-					} else if (ptIdentifier.matcher(word).matches()){
+					} else if (ptIdentifier.matcher(word).matches()) {
 						tokens.add(new Token("Identifier", word.toString()));
-					} else if (ptInteger.matcher(word).matches()){
+					} else if (ptInteger.matcher(word).matches()) {
 						tokens.add(new Token("Integer", word.toString()));
 					}
 					secondCharGrabbed = true;
