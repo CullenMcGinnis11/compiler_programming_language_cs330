@@ -26,7 +26,7 @@ public class Starter_1 {
 //        	System.out.println("Token: " + t.getValue() + " Type: " + t.getType() + " Number: " + number);
 //        	number++;
 //        }
-        
+        System.out.println(Token.toString(tokens));
 		Parser parser = new Parser(tokens);
         ProgramNode program = parser.parseProgram();
         System.out.println("Parse SUCCESS: " + program.statements.size() + " statement(s)");

@@ -3,8 +3,6 @@ import java.io.StringReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Arrays;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.lang.StringBuilder;
 
@@ -93,7 +91,7 @@ public class Tokenizer {
 							}
 						} else if (character == '/') {
 							if (nextChar == '/') {
-								tokens.add(new Token("Comment", "//"));
+								// tokens.add(new Token("Comment", "//")); //Might not even want to add that its a comment into the tokenizer
 								while (stringReader.read() != (int) '\n') {
 								}
 								line++;
