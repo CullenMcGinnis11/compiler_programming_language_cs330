@@ -17,7 +17,7 @@ public class Tokenizer {
 		Pattern ptIdentifier = Pattern.compile(identifier);
 		String invalidIdentifier = "[1-9][1-9]*[\\D|_]\\w*";
 		Pattern ptInvalidIdentifier = Pattern.compile(invalidIdentifier);
-		String integer = "[1-9][1-9]*";
+		String integer = "[0-9][0-9]*";
 		Pattern ptInteger = Pattern.compile(integer);
 		// List to encapsulate all symbols
 		char[] symbolList = new char[22];

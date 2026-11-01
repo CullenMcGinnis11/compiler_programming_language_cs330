@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 //    \****__              ____
@@ -29,12 +30,16 @@ public class Parser {
 
     private Token peek() { // make sure you are not at end to check tokens
         if (atEnd()) {
-            throw new IllegalArgumentException("End of Tokens");
+            throw new IllegalArgumentException("End of Tokens, token #" + current);
         }
         return tokens.get(current);
     }
 
     private Token pop() {
+        if (atEnd()) {
+            throw new IllegalArgumentException("End of Tokens");
+        }
+        System.out.println("popped!");
         Token returnVal = tokens.get(current);
         current++;
         return returnVal;
@@ -47,11 +52,12 @@ public class Parser {
     }
 
     private boolean checkTokenType(String expectType) { // TYPE examples, Keyword, String, Operator, Boolean
-        return peek().getValue().equals(expectType);
+        return peek().getType().equals(expectType);
     }
 
     private boolean checkTokenValue(String expectValue) { // create a statment for what you expect out of a token
-        return peek().getType().equals(expectValue);
+        System.out.println("Triggered!");
+        return peek().getValue().equals(expectValue);
     }
 
     // private void nextToken(){ DONT THINK I WILL NEED TO USE THIS
@@ -60,7 +66,7 @@ public class Parser {
     // }
     // }
     private void errorOccuredWrongToken(String expected) {
-        throw new IllegalAccessError("Expected " + expected + " instead " + peek().getValue());
+        throw new IllegalAccessError("Expected " + expected + " instead " + peek().getValue() + " token #" + current);
     }
 
     private String identifierExpressionPop() {
@@ -96,12 +102,23 @@ public class Parser {
         return program;
     }
 
+    private List<StatementNode> parseStatements() {
+        List<StatementNode> statements = new ArrayList<>();
+        while (!atEnd() && !checkTokenValue("}")) {
+            System.out.println("parsing another statement!");
+            statements.add(parseStatement());
+        }
+        return statements;
+    }
+
     // function to parse each statement
     private StatementNode parseStatement() {
+        System.out.println(peek().getValue());
         if (checkTokenValue("int")
                 || checkTokenValue("String")
-                || checkTokenValue("boolean")
-                || checkTokenValue("Pokemon")) {
+                || checkTokenValue("boolean")) 
+                {
+            System.out.println("Initial Check is working");
             String type = pop().getValue();
             String name = identifierExpressionPop(); // Identifier is a special case where we need to check its an
                                                      // identifier then grab the string
@@ -112,6 +129,7 @@ public class Parser {
         } else if (checkTokenType("Identifier")) {
             String identifier = pop().getValue();
             ExpressionNode statementTailNode = parseStatementTail();
+            match(";"); //TODO: THIS IS A HARD MAYBE!
             return new StatementNodeTail(identifier, statementTailNode);
         } else if (checkTokenValue("Pokemon")) {
             pop();
@@ -137,13 +155,151 @@ public class Parser {
             ExpressionNode expression = parseExpression();
             match(";");
             return new PrintStatement(expression);
+        } else if (checkTokenValue("if")) {
+            match("if");
+            match("(");
+            ExpressionNode expression = parseExpression();
+            match(")");
+            List<StatementNode> block = parseBlock();
+            List<StatementNode> elseIfListNode = parseElseIfList();
+            StatementNode elseClauseNode = parseElseClause();
+            return new IfStatement(expression, block, elseIfListNode, elseClauseNode);
+        } else if (checkTokenValue("while")) {
+            match("while");
+            match("(");
+            ExpressionNode expression = parseExpression();
+            match(")");
+            List<StatementNode> block = parseBlock();
+            return new WhileStatement(expression, block);
+        } else if (checkTokenValue("for")) {
+            match("for");
+            match("(");
+            ExpressionNode forInitializeNode = parseForInit();
+            match(";");
+            ExpressionNode expression = parseExpression();
+            match(";");
+            ExpressionNode forUpdateNode = parseForUpdate();
+            match(")");
+            List<StatementNode> blockNode = parseBlock();
+            return new ForStatement(forInitializeNode, expression, forUpdateNode, blockNode);
+        } else if (checkTokenValue("function")) {
+            match("function");
+            ExpressionNode returnTypeNode = parseReturnType();
+            String identifier = identifierExpressionPop();
+            match("(");
+            ExpressionNode paramaterListNode = parseParamaterList();
+            match(")");
+            List<StatementNode> block = parseBlock();
+            return new FunctionStatement(returnTypeNode, identifier, paramaterListNode, block);
+        } else if (checkTokenValue("break")){
+            match("break");
+            match(";");
+            return new BreakStatement();
+        } else if (checkTokenValue("continue")){
+            match("continue");
+            match(";");
+            return new ContinueStatement();
+        } else if (checkTokenValue("return")){
+            match("return");
+            match(";");
+            ExpressionNode expression = parseExpression();
+            return new ReturnStatement(expression);
         }
         // TODO: Trying to work though how parsing statement would work, need to work
         // through this part
         // Parse other non-terminal here
         // e.g., parseIfStatement, parseVariableDeclarationStatement, parseForStatement
         // return the node based on different function
-        throw new IllegalAccessError("Nothing was found");
+        throw new IllegalAccessError("Something went wrong while grabbing token, token grabbed was " + peek().getValue() + " token was #" + current);
+    }
+
+    private ExpressionNode parseParamaterList() {
+        if (checkTokenValue("int")
+                || checkTokenValue("String")
+                || checkTokenValue("boolean")
+                || checkTokenValue("Pokemon")) {
+            ExpressionNode parameter = parseParamater();
+            List<ExpressionNode> parameterListTailNode = parseParamaterListTail();
+            return new ParamaterList(parameter, parameterListTailNode);
+        } else {
+            return new ParamaterList();
+        }
+    }
+    private ExpressionNode parseParamater() {
+        String type = pop().getValue();
+        String identifier = identifierExpressionPop();
+        return new Parameter(type, identifier);
+    }
+    private List<ExpressionNode> parseParamaterListTail(){
+        List<ExpressionNode> paramaterListTail = new ArrayList<>();
+        while(checkTokenValue(",")){
+            match("\'");
+            ExpressionNode parameter = parseParamater();
+            paramaterListTail.add(parameter);
+        }
+        return paramaterListTail;
+    }
+
+    private ExpressionNode parseReturnType() {
+        if (checkTokenValue("void")) {
+            String voidString = pop().getValue();
+            return new ReturnType(voidString);
+        } else if (checkTokenValue("int")
+                || checkTokenValue("String")
+                || checkTokenValue("boolean")
+                || checkTokenValue("Pokemon")) {
+            String type = pop().getValue();
+            return new ReturnType(type);
+        } else {
+            errorOccuredWrongToken("Void/int/String/boolean/Pokemon");
+            return new ReturnType();
+        }
+    }
+
+    private ExpressionNode parseForUpdate() {
+        String identifier = identifierExpressionPop();
+        match("++");
+        return new ForUpdate(identifier);
+    }
+
+    private ExpressionNode parseForInit() {
+        match("int");
+        String identifier = identifierExpressionPop();
+        match("=");
+        ExpressionNode expression = parseExpression();
+        return new ForInit(identifier, expression);
+    }
+
+    private List<StatementNode> parseBlock() { // This might be so incredibly janky
+        match("{");
+        List<StatementNode> statements = parseStatements();
+        match("}");
+        return statements;
+    }
+
+    private List<StatementNode> parseElseIfList() {
+        List<StatementNode> elseIfList = new ArrayList<>();
+        while (checkTokenValue("elseif")) {
+            pop();
+            match("(");
+            ExpressionNode expression = parseExpression();
+            match(")");
+            List<StatementNode> block = parseBlock();
+            StatementNode elseIfStatementNode = new ElseIfStatement(expression, block);
+            elseIfList.add(elseIfStatementNode);
+
+        }
+        return elseIfList;
+    }
+
+    private StatementNode parseElseClause() {
+        if (checkTokenValue("else")) {
+            pop();
+            List<StatementNode> block = parseBlock();
+            return new ElseClause(block);
+        } else {
+            return new ElseClause();
+        }
     }
 
     private ExpressionNode parseStringLiteral() {
@@ -167,7 +323,7 @@ public class Parser {
                 || checkTokenValue("move3") || checkTokenValue("move4")) {
             ExpressionNode moveKeywordNode = parseMoveKeyword();
             String identifier = identifierExpressionPop();
-            match(";");
+            // match(";");
             return new StatementTail(moveKeywordNode, identifier);
         } else {
             ExpressionNode lValueTailNode = parseLValueTail();
@@ -306,6 +462,7 @@ public class Parser {
         if (peek().getValue().equals("false") || peek().getValue().equals("true")
                 || peek().getType().equals("String") || peek().getType().equals("Integer")) {
             ExpressionNode literalNode = parseLiteralNode();
+            //TODO: POSSIBLE PLACE TO PUT match(";");
             return new PrimaryExpression(literalNode);
         } else if (checkTokenType("Identifier")) { // Other way of checking token type
             String identifier = pop().getValue();

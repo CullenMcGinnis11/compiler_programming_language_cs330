@@ -307,14 +307,7 @@ class LValueNode extends ExpressionNode {
     }
 }
 
-//You may also want to know this...
-class FunctionCallNode extends ExpressionNode {
-    public final String name;
-    public final List<ExpressionNode> arguments; // functiom(1, 3, 4 + 5, anotherFunction())
-                                                            // If it is another function it will just call itself again
-    
-    //more code here...
-}
+
 
 class StringLiteral extends ExpressionNode {
     public final String string;
@@ -323,7 +316,51 @@ class StringLiteral extends ExpressionNode {
     }
 }
 
+class ForInit extends ExpressionNode {
+    public final String identifier;
+    public final ExpressionNode expression;
+    public ForInit(String identifier, ExpressionNode expression) {
+        this.identifier = identifier;
+        this.expression = expression;
+    }
+}
+class ForUpdate extends ExpressionNode {
+    public final String identifier;
+    public ForUpdate(String identifier) {
+        this.identifier = identifier;
+    }
+}
 
+class ReturnType extends ExpressionNode {
+    public final String type;
+    public ReturnType(String type) {
+        this.type = type;
+    }
+    public ReturnType(){
+        this.type = null;
+    }
+}
+class ParamaterList extends ExpressionNode {
+    public final ExpressionNode type;
+    public final List<ExpressionNode> expressionListTail;
+    public ParamaterList(ExpressionNode type, List<ExpressionNode> expressionListTail) {
+        this.type = type;
+        this.expressionListTail = expressionListTail;
+    }
+    public ParamaterList(){
+        this.type = null;
+        this.expressionListTail = null;
+    }
+}
+
+class Parameter extends ExpressionNode {
+    public final String type;
+    public final String identifier;
+    public Parameter(String type, String identifier) {
+        this.type = type;
+        this.identifier = identifier;
+    }
+}
 
 
 //...
