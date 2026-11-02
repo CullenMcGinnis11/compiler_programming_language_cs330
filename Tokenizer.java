@@ -17,7 +17,7 @@ public class Tokenizer {
 		Pattern ptIdentifier = Pattern.compile(identifier);
 		String invalidIdentifier = "[1-9][1-9]*[\\D|_]\\w*";
 		Pattern ptInvalidIdentifier = Pattern.compile(invalidIdentifier);
-		String integer = "[0-9][0-9]*";
+		String integer = "[-|0-9][0-9]*";
 		Pattern ptInteger = Pattern.compile(integer);
 		// List to encapsulate all symbols
 		char[] symbolList = new char[22];
@@ -68,7 +68,8 @@ public class Tokenizer {
 				}
 				if (isSymbol) {
 					if (character == '=' || character == '|' || character == '&' || character == '!'
-							|| character == '<' || character == '>' || character == '/' || character == '"') { // all
+							|| character == '<' || character == '>' || character == '/' || character == '"' 
+							|| character == '+' || character =='-') { // all
 																												// operators
 																												// where
 																												// you
@@ -79,17 +80,33 @@ public class Tokenizer {
 															// compiler know to look at next character
 							secondCharGrabbed = true;
 						}
-						if (character == '>' || character == '<' || character == '+' || character == '-') {
+						if (character == '>' || character == '<' || character == '-') {
 							if (nextChar == '=') {
 								tokens.add(new Token("Comparison Operator", Character.toString((char) character)
 										.concat(Character.toString((char) nextChar))));
+										continue;
 							} else {
 								tokens.add(new Token("Comparison Operator", Character.toString((char) character)));
 
 								secondCharNotUsed = true;
 								continue;
 							}
-						} else if (character == '/') {
+						} else if(character == '+') {
+							if (nextChar == '+') {
+								tokens.add(new Token("Variable Update", Character.toString((char) character)
+										.concat(Character.toString((char) nextChar))));
+										continue;
+							} else if(nextChar == '=') {
+								tokens.add(new Token("Assignment Operator", Character.toString((char) character)
+										.concat(Character.toString((char) nextChar))));
+										continue;
+							} else {
+								System.out.println("+ found but nothing else after");
+								tokens.add(new Token("Operator", Character.toString((char) character)));
+								secondCharNotUsed = true;
+
+							}
+						}else if (character == '/') {
 							if (nextChar == '/') {
 								// tokens.add(new Token("Comment", "//")); //Might not even want to add that its a comment into the tokenizer
 								while (stringReader.read() != (int) '\n') {
@@ -142,6 +159,7 @@ public class Tokenizer {
 							}
 						}
 						continue;
+						
 					} else if (character == '(' // all operators where it cant be anything but just the single element
 							|| character == ')'
 							|| character == '['
@@ -155,7 +173,8 @@ public class Tokenizer {
 							|| character == '\''
 							|| character == '\\'
 							|| character == '+'
-							|| character == '-') {
+							|| character == '-' //TODO: YOU GRAB THIS NEGATIVE BEFORE THE WORDS, ISSUE ISSUE
+						) {
 						tokens.add(new Token("Operator", Character.toString((char) character)));
 						secondCharGrabbed = false;
 					} else if (character == '.'

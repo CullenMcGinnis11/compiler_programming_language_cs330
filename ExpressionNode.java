@@ -1,4 +1,3 @@
-import java.beans.Expression;
 import java.util.List;
 
 //We can merge the code in this file into the file statement node
@@ -196,8 +195,26 @@ class PrimaryExpression extends ExpressionNode {
 }
 class LiteralNode extends ExpressionNode {
     public final String value;
+    public final ExpressionNode expression;
     public LiteralNode(String value){
         this.value = value;
+        this.expression = null;
+    }
+    public LiteralNode(ExpressionNode expression) {
+        this.value = null;
+        this.expression = expression;
+    }
+}
+class IntegerNode extends ExpressionNode {
+    public final String string;
+    public final ExpressionNode expression;
+    public IntegerNode(String sign, ExpressionNode expressionNode){
+        this.string = sign;
+        this.expression = expressionNode;
+    }
+    public IntegerNode(String string){
+        this.string = string;
+        this.expression = null; //this
     }
 }
 class PrimaryExpressionSuffix extends ExpressionNode {

@@ -16,6 +16,8 @@ import java.util.List;
 
 public class Parser {
     private int current = 0;
+    List<Token> token = new ArrayList<>();
+    Token nullToken = (new Token("null", "null"));
     // List of tokens, the output from tokenizer
     private final List<Token> tokens;
 
@@ -30,25 +32,19 @@ public class Parser {
 
     private Token peek() { // make sure you are not at end to check tokens
         if (atEnd()) {
-            throw new IllegalArgumentException("End of Tokens, token #" + current);
+            return nullToken;
         }
         return tokens.get(current);
     }
 
     private Token pop() {
         if (atEnd()) {
-            throw new IllegalArgumentException("End of Tokens");
+            return nullToken;
         }
-        System.out.println("popped!");
+        //System.out.println("popped!");
         Token returnVal = tokens.get(current);
         current++;
         return returnVal;
-    }
-
-    private boolean checkToken(String expectType, String expectValue) { // create a statment for what you expect out of
-                                                                        // a token
-        return peek().getType().equals(expectType)
-                && peek().getValue().equals(expectValue);
     }
 
     private boolean checkTokenType(String expectType) { // TYPE examples, Keyword, String, Operator, Boolean
@@ -56,7 +52,7 @@ public class Parser {
     }
 
     private boolean checkTokenValue(String expectValue) { // create a statment for what you expect out of a token
-        System.out.println("Triggered!");
+        //System.out.println("Triggered!");
         return peek().getValue().equals(expectValue);
     }
 
@@ -66,7 +62,7 @@ public class Parser {
     // }
     // }
     private void errorOccuredWrongToken(String expected) {
-        throw new IllegalAccessError("Expected " + expected + " instead " + peek().getValue() + " token #" + current);
+        throw new IllegalAccessError("Expected " + expected + " instead " + peek().getValue() + " token #" + (current + 1));
     }
 
     private String identifierExpressionPop() {
@@ -85,6 +81,7 @@ public class Parser {
             errorOccuredWrongToken(expected);
         }
     }
+    
 
     // Start Point. Parse the program from the first token
     public ProgramNode parseProgram() {
@@ -105,7 +102,6 @@ public class Parser {
     private List<StatementNode> parseStatements() {
         List<StatementNode> statements = new ArrayList<>();
         while (!atEnd() && !checkTokenValue("}")) {
-            System.out.println("parsing another statement!");
             statements.add(parseStatement());
         }
         return statements;
@@ -113,12 +109,10 @@ public class Parser {
 
     // function to parse each statement
     private StatementNode parseStatement() {
-        System.out.println(peek().getValue());
         if (checkTokenValue("int")
                 || checkTokenValue("String")
                 || checkTokenValue("boolean")) 
                 {
-            System.out.println("Initial Check is working");
             String type = pop().getValue();
             String name = identifierExpressionPop(); // Identifier is a special case where we need to check its an
                                                      // identifier then grab the string
@@ -144,7 +138,9 @@ public class Parser {
         } else if (checkTokenValue("spelldatabase")) {
             pop();
             ExpressionNode stringLiteralNode = parseStringLiteral();
+            match(";");
             return new SpellDatabaseStatement(stringLiteralNode);
+
         } else if (checkTokenValue("show")) {
             pop();
             String identifier = identifierExpressionPop();
@@ -201,8 +197,8 @@ public class Parser {
             return new ContinueStatement();
         } else if (checkTokenValue("return")){
             match("return");
-            match(";");
             ExpressionNode expression = parseExpression();
+            match(";");
             return new ReturnStatement(expression);
         }
         // TODO: Trying to work though how parsing statement would work, need to work
@@ -210,7 +206,7 @@ public class Parser {
         // Parse other non-terminal here
         // e.g., parseIfStatement, parseVariableDeclarationStatement, parseForStatement
         // return the node based on different function
-        throw new IllegalAccessError("Something went wrong while grabbing token, token grabbed was " + peek().getValue() + " token was #" + current);
+        throw new IllegalAccessError("Something went wrong while grabbing token, token grabbed was " + peek().getValue() + " token was #" + (current + 1));
     }
 
     private ExpressionNode parseParamaterList() {
@@ -233,7 +229,7 @@ public class Parser {
     private List<ExpressionNode> parseParamaterListTail(){
         List<ExpressionNode> paramaterListTail = new ArrayList<>();
         while(checkTokenValue(",")){
-            match("\'");
+            match(",");
             ExpressionNode parameter = parseParamater();
             paramaterListTail.add(parameter);
         }
@@ -460,7 +456,8 @@ public class Parser {
 
     private ExpressionNode parsePrimaryExpression() {
         if (peek().getValue().equals("false") || peek().getValue().equals("true")
-                || peek().getType().equals("String") || peek().getType().equals("Integer")) {
+                || peek().getType().equals("String") || peek().getType().equals("Integer") 
+            || peek().getValue().equals("-")) {
             ExpressionNode literalNode = parseLiteralNode();
             //TODO: POSSIBLE PLACE TO PUT match(";");
             return new PrimaryExpression(literalNode);
@@ -469,6 +466,7 @@ public class Parser {
             ExpressionNode primaryExpressionSuffixNode = parsePrimaryExpressionSuffix();
             return new PrimaryExpression(identifier, primaryExpressionSuffixNode);
         } else if (checkTokenValue("(")) {
+            pop();
             ExpressionNode expressionNode = parseExpression();
             match(")");
             return new PrimaryExpression(expressionNode, "ExpressionString");
@@ -499,11 +497,25 @@ public class Parser {
         } else if (peek().getType().equals("String")) {
             String stringValue = pop().getValue();
             return new LiteralNode(stringValue);
-        } else if (peek().getType().equals("Integer")) {
-            return new LiteralNode(pop().getValue());
+        } else if (peek().getType().equals("Integer") || checkTokenValue("-")) { //Could account for negatives here of fix it in the tokenizer
+            ExpressionNode integer = parseInteger();
+            return new LiteralNode(integer);
         } else {
             errorOccuredWrongToken("Integer/String/Boolean");
             return new LiteralNode("Error");
+        }
+    }
+    private ExpressionNode parseInteger() {
+        if(checkTokenValue("-")){
+            String sign = pop().getValue();
+            ExpressionNode integer = parseInteger();
+            return new IntegerNode(sign, integer);
+        } else if(checkTokenType("Integer")) {
+            String integer = pop().getValue();
+            return new IntegerNode(integer);
+        } else {
+            errorOccuredWrongToken("Integer/-");
+            return new IntegerNode("Error");
         }
     }
 
