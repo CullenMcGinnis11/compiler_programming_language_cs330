@@ -1,4 +1,3 @@
-
 import java.io.StringReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -68,11 +67,11 @@ public class Tokenizer {
 				}
 				if (isSymbol) {
 					if (character == '=' || character == '|' || character == '&' || character == '!'
-							|| character == '<' || character == '>' || character == '/' || character == '"' 
-							|| character == '+' || character =='-') { // all
-																												// operators
-																												// where
-																												// you
+							|| character == '<' || character == '>' || character == '/' || character == '"'
+							|| character == '+' || character == '-') { // all
+																		// operators
+																		// where
+																		// you
 						// might need something
 						// after it
 						if (!secondCharNotUsed) {
@@ -84,31 +83,32 @@ public class Tokenizer {
 							if (nextChar == '=') {
 								tokens.add(new Token("Comparison Operator", Character.toString((char) character)
 										.concat(Character.toString((char) nextChar))));
-										continue;
+								continue;
 							} else {
 								tokens.add(new Token("Comparison Operator", Character.toString((char) character)));
 
 								secondCharNotUsed = true;
 								continue;
 							}
-						} else if(character == '+') {
+						} else if (character == '+') {
 							if (nextChar == '+') {
 								tokens.add(new Token("Variable Update", Character.toString((char) character)
 										.concat(Character.toString((char) nextChar))));
-										continue;
-							} else if(nextChar == '=') {
+								continue;
+							} else if (nextChar == '=') {
 								tokens.add(new Token("Assignment Operator", Character.toString((char) character)
 										.concat(Character.toString((char) nextChar))));
-										continue;
+								continue;
 							} else {
 								System.out.println("+ found but nothing else after");
 								tokens.add(new Token("Operator", Character.toString((char) character)));
 								secondCharNotUsed = true;
 
 							}
-						}else if (character == '/') {
+						} else if (character == '/') {
 							if (nextChar == '/') {
-								// tokens.add(new Token("Comment", "//")); //Might not even want to add that its a comment into the tokenizer
+								// tokens.add(new Token("Comment", "//")); //Might not even want to add that its
+								// a comment into the tokenizer
 								while (stringReader.read() != (int) '\n') {
 								}
 								line++;
@@ -159,7 +159,7 @@ public class Tokenizer {
 							}
 						}
 						continue;
-						
+
 					} else if (character == '(' // all operators where it cant be anything but just the single element
 							|| character == ')'
 							|| character == '['
@@ -173,8 +173,8 @@ public class Tokenizer {
 							|| character == '\''
 							|| character == '\\'
 							|| character == '+'
-							|| character == '-' //TODO: YOU GRAB THIS NEGATIVE BEFORE THE WORDS, ISSUE ISSUE
-						) {
+							|| character == '-' // TODO: YOU GRAB THIS NEGATIVE BEFORE THE WORDS, ISSUE ISSUE
+					) {
 						tokens.add(new Token("Operator", Character.toString((char) character)));
 						secondCharGrabbed = false;
 					} else if (character == '.'

@@ -41,7 +41,6 @@ public class Parser {
         if (atEnd()) {
             return nullToken;
         }
-        //System.out.println("popped!");
         Token returnVal = tokens.get(current);
         current++;
         return returnVal;
@@ -52,17 +51,12 @@ public class Parser {
     }
 
     private boolean checkTokenValue(String expectValue) { // create a statment for what you expect out of a token
-        //System.out.println("Triggered!");
         return peek().getValue().equals(expectValue);
     }
 
-    // private void nextToken(){ DONT THINK I WILL NEED TO USE THIS
-    // if(!atEnd()){
-    // current++;
-    // }
-    // }
     private void errorOccuredWrongToken(String expected) {
-        throw new IllegalAccessError("Expected " + expected + " instead " + peek().getValue() + " token #" + (current + 1));
+        throw new IllegalAccessError(
+                "Expected " + expected + " instead " + peek().getValue() + " token #" + (current + 1));
     }
 
     private String identifierExpressionPop() {
@@ -81,7 +75,6 @@ public class Parser {
             errorOccuredWrongToken(expected);
         }
     }
-    
 
     // Start Point. Parse the program from the first token
     public ProgramNode parseProgram() {
@@ -90,7 +83,6 @@ public class Parser {
         ProgramNode program = new ProgramNode();
 
         // parse the statements, hint: statements, but not a statement. But how?
-        int index = 0;
         while (current < tokens.size()) {
             program.statements.add(parseStatement());
         }
@@ -111,8 +103,7 @@ public class Parser {
     private StatementNode parseStatement() {
         if (checkTokenValue("int")
                 || checkTokenValue("String")
-                || checkTokenValue("boolean")) 
-                {
+                || checkTokenValue("boolean")) {
             String type = pop().getValue();
             String name = identifierExpressionPop(); // Identifier is a special case where we need to check its an
                                                      // identifier then grab the string
@@ -123,7 +114,7 @@ public class Parser {
         } else if (checkTokenType("Identifier")) {
             String identifier = pop().getValue();
             ExpressionNode statementTailNode = parseStatementTail();
-            match(";"); //TODO: THIS IS A HARD MAYBE!
+            match(";"); // TODO: THIS IS A HARD MAYBE!
             return new StatementNodeTail(identifier, statementTailNode);
         } else if (checkTokenValue("Pokemon")) {
             pop();
@@ -187,26 +178,23 @@ public class Parser {
             match(")");
             List<StatementNode> block = parseBlock();
             return new FunctionStatement(returnTypeNode, identifier, paramaterListNode, block);
-        } else if (checkTokenValue("break")){
+        } else if (checkTokenValue("break")) {
             match("break");
             match(";");
             return new BreakStatement();
-        } else if (checkTokenValue("continue")){
+        } else if (checkTokenValue("continue")) {
             match("continue");
             match(";");
             return new ContinueStatement();
-        } else if (checkTokenValue("return")){
+        } else if (checkTokenValue("return")) {
             match("return");
             ExpressionNode expression = parseExpression();
             match(";");
             return new ReturnStatement(expression);
         }
-        // TODO: Trying to work though how parsing statement would work, need to work
-        // through this part
-        // Parse other non-terminal here
-        // e.g., parseIfStatement, parseVariableDeclarationStatement, parseForStatement
-        // return the node based on different function
-        throw new IllegalAccessError("Something went wrong while grabbing token, token grabbed was " + peek().getValue() + " token was #" + (current + 1));
+
+        throw new IllegalAccessError("Something went wrong while grabbing token, token grabbed was " + peek().getValue()
+                + " token was #" + (current + 1));
     }
 
     private ExpressionNode parseParamaterList() {
@@ -221,14 +209,16 @@ public class Parser {
             return new ParamaterList();
         }
     }
+
     private ExpressionNode parseParamater() {
         String type = pop().getValue();
         String identifier = identifierExpressionPop();
         return new Parameter(type, identifier);
     }
-    private List<ExpressionNode> parseParamaterListTail(){
+
+    private List<ExpressionNode> parseParamaterListTail() {
         List<ExpressionNode> paramaterListTail = new ArrayList<>();
-        while(checkTokenValue(",")){
+        while (checkTokenValue(",")) {
             match(",");
             ExpressionNode parameter = parseParamater();
             paramaterListTail.add(parameter);
@@ -266,7 +256,7 @@ public class Parser {
         return new ForInit(identifier, expression);
     }
 
-    private List<StatementNode> parseBlock() { // This might be so incredibly janky
+    private List<StatementNode> parseBlock() {
         match("{");
         List<StatementNode> statements = parseStatements();
         match("}");
@@ -357,8 +347,8 @@ public class Parser {
         return new LogicalOr(and, orTail);
     }
 
-    private ExpressionNode parseLogicalOrTail() { // TODO: This is an example of a first and follow set
-        if (peek().getValue().equals("||")) { // might cause a bug because itll be relating a string to a char????
+    private ExpressionNode parseLogicalOrTail() {
+        if (peek().getValue().equals("||")) {
             pop();
             ExpressionNode and = parseLogicalAnd();
             ExpressionNode orTail = parseLogicalOrTail();
@@ -442,8 +432,7 @@ public class Parser {
         }
     }
 
-    private ExpressionNode parseUnaryExpression() { // could run into issues where if its the wrong token entirely it
-                                                    // could throw an error, I DONT KNOW THOUGH
+    private ExpressionNode parseUnaryExpression() {
         if (peek().getValue().equals("!")) {
             String negativeSymbol = pop().getValue();
             ExpressionNode unaryExpressionNode = parseUnaryExpression();
@@ -456,10 +445,10 @@ public class Parser {
 
     private ExpressionNode parsePrimaryExpression() {
         if (peek().getValue().equals("false") || peek().getValue().equals("true")
-                || peek().getType().equals("String") || peek().getType().equals("Integer") 
-            || peek().getValue().equals("-")) {
+                || peek().getType().equals("String") || peek().getType().equals("Integer")
+                || peek().getValue().equals("-")) {
             ExpressionNode literalNode = parseLiteralNode();
-            //TODO: POSSIBLE PLACE TO PUT match(";");
+            // TODO: POSSIBLE PLACE TO PUT match(";");
             return new PrimaryExpression(literalNode);
         } else if (checkTokenType("Identifier")) { // Other way of checking token type
             String identifier = pop().getValue();
@@ -490,14 +479,14 @@ public class Parser {
         }
     }
 
-    private ExpressionNode parseLiteralNode() { // might need to change htis is parsing out boolean whatever whatever
+    private ExpressionNode parseLiteralNode() {
         if (peek().getValue().equals("false") || peek().getValue().equals("true")) {
             String booleanValue = pop().getValue();
             return new LiteralNode(booleanValue);
         } else if (peek().getType().equals("String")) {
             String stringValue = pop().getValue();
             return new LiteralNode(stringValue);
-        } else if (peek().getType().equals("Integer") || checkTokenValue("-")) { //Could account for negatives here of fix it in the tokenizer
+        } else if (peek().getType().equals("Integer") || checkTokenValue("-")) {
             ExpressionNode integer = parseInteger();
             return new LiteralNode(integer);
         } else {
@@ -505,12 +494,13 @@ public class Parser {
             return new LiteralNode("Error");
         }
     }
+
     private ExpressionNode parseInteger() {
-        if(checkTokenValue("-")){
+        if (checkTokenValue("-")) {
             String sign = pop().getValue();
             ExpressionNode integer = parseInteger();
             return new IntegerNode(sign, integer);
-        } else if(checkTokenType("Integer")) {
+        } else if (checkTokenType("Integer")) {
             String integer = pop().getValue();
             return new IntegerNode(integer);
         } else {
@@ -561,10 +551,4 @@ public class Parser {
             return new PokemonField("Error");
         }
     }
-
-    // more functions for parsing every non-terminal
-    // ...
-    // ... 500 lines of code :D
-    // ...
-
 }
