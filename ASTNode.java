@@ -1,4 +1,4 @@
-//Nothing here, just an empty ASTNode
 public abstract class ASTNode {
-
+	abstract <T> T visit(ASTVisitor<T> visitor);
 }
+
