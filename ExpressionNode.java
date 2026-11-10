@@ -1,7 +1,9 @@
 import java.util.List;
 
 abstract class ExpressionNode {
-
+public <T> T visit(ASTVisitor<T> visitor){
+    return null;
+}
 }
 
 class expressionExpressionNode extends ExpressionNode {
@@ -9,6 +11,10 @@ class expressionExpressionNode extends ExpressionNode {
 
     public expressionExpressionNode(ExpressionNode or) {
         this.or = or;
+    }
+    @Override 
+    public <T> T visit(ASTVisitor<T> visitor){
+        return visitor.visitExpressionExpressionNode(this);
     }
 }
 
@@ -33,6 +39,9 @@ class LogicalOr extends ExpressionNode {
         this.left = left;
         this.right = right;
     }
+    public <T> T visit(ASTVisitor<T> visitor){
+        return visitor.visitLogicalOr(this);
+    }
 }
 
 class LogicalOrTail extends ExpressionNode {
@@ -48,6 +57,9 @@ class LogicalOrTail extends ExpressionNode {
         this.left = null;
         this.right = null;
     }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitLogicalOrTail(this);
+    }
 }
 
 class LogicalAnd extends ExpressionNode {
@@ -57,6 +69,9 @@ class LogicalAnd extends ExpressionNode {
     public LogicalAnd(ExpressionNode left, ExpressionNode right) {
         this.left = left;
         this.right = right;
+    }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitLogicalAnd(this);
     }
 }
 
@@ -73,6 +88,9 @@ class LogicalAndTail extends ExpressionNode {
         this.equalityExpressionNode = null;
         this.logicalAndTail = null;
     }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitLogicalAndTail(this);
+    }
 }
 
 class EqualityExpression extends ExpressionNode {
@@ -80,6 +98,9 @@ class EqualityExpression extends ExpressionNode {
 
     public EqualityExpression(ExpressionNode relationalExpression) {
         this.relationalExpression = relationalExpression;
+    }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitEqualityExpression(this);
     }
 }
 
@@ -90,6 +111,9 @@ class RelationalExpression extends ExpressionNode {
     public RelationalExpression(ExpressionNode additiveExpression, ExpressionNode relationalExpressionTail) {
         this.additiveExpression = additiveExpression;
         this.relationalExpressionTail = relationalExpressionTail;
+    }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitRelationalExpression(this);
     }
 }
 
@@ -106,6 +130,27 @@ class RelationalExpressionTail extends ExpressionNode {
         this.relation = null;
         this.additiveExpression = null;
     }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitRelationalExpressionTail(this);
+    }
+}
+class BlockExpression extends ExpressionNode {
+    public final ExpressionNode statements;
+    public BlockExpression(ExpressionNode statements){
+        this.statements = statements;
+    }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitBlock(this);
+    }
+}
+class Statements extends ExpressionNode {
+    public final List<StatementNode> statements;
+    public Statements(List<StatementNode> statements){
+        this.statements = statements; // this could be named better
+    }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitStatements(this);
+    }
 }
 
 class AdditiveExpression extends ExpressionNode {
@@ -115,6 +160,9 @@ class AdditiveExpression extends ExpressionNode {
     public AdditiveExpression(ExpressionNode multiplicativeExpression, ExpressionNode additiveExpressionTail) {
         this.multiplicativeExpression = multiplicativeExpression;
         this.additiveExpressionTail = additiveExpressionTail;
+    }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitAdditiveExpression(this);
     }
 }
 
@@ -135,6 +183,9 @@ class AdditiveExpressionTail extends ExpressionNode {
         this.multiplicativeExpression = null;
         this.additiveExpressionTail = null;
     }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitAdditiveExpressionTail(this);
+    }
 }
 
 class MultiplicativeExpression extends ExpressionNode {
@@ -144,6 +195,9 @@ class MultiplicativeExpression extends ExpressionNode {
     public MultiplicativeExpression(ExpressionNode unaryExpression, ExpressionNode multiplicativeExpressionTail) {
         this.unaryExpression = unaryExpression;
         this.multiplicativeExpressionTail = multiplicativeExpressionTail;
+    }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitMultiplicativeExpression(this);
     }
 }
 
@@ -164,6 +218,9 @@ class MultiplicativeExpressionTail extends ExpressionNode {
         this.unaryExpression = null;
         this.multiplicativeExpressionTail = null;
     }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitMultiplicativeExpressionTail(this);
+    }
 }
 
 class UnaryExpression extends ExpressionNode {
@@ -181,6 +238,9 @@ class UnaryExpression extends ExpressionNode {
         this.primaryExpression = primaryExpression;
         this.negativeSymbol = null;
         this.unaryExpression = null;
+    }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitUnaryExpression(this);
     }
 }
 
@@ -217,6 +277,9 @@ class PrimaryExpression extends ExpressionNode {
         this.literalExpression = null;
         this.identifier = null;
     }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitPrimaryExpression(this);
+    }
 }
 
 class LiteralNode extends ExpressionNode {
@@ -231,6 +294,9 @@ class LiteralNode extends ExpressionNode {
     public LiteralNode(ExpressionNode expression) {
         this.value = null;
         this.expression = expression;
+    }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitLiteralNode(this);
     }
 }
 
@@ -247,6 +313,9 @@ class IntegerNode extends ExpressionNode {
         this.string = string;
         this.expression = null; // this
     }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitIntegerNode(this);
+    }
 }
 
 class PrimaryExpressionSuffix extends ExpressionNode {
@@ -258,6 +327,9 @@ class PrimaryExpressionSuffix extends ExpressionNode {
 
     public PrimaryExpressionSuffix() {
         this.node = null;
+    }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitPrimaryExpressionSuffix(this);
     }
 }
 
@@ -274,6 +346,9 @@ class ArgumentList extends ExpressionNode {
         this.expressionNode = expressionNode;
         this.argumentListTail = argumentListTail;
     }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitArgumentList(this);
+    }
 }
 
 class ArgumentListTail extends ExpressionNode {
@@ -289,6 +364,9 @@ class ArgumentListTail extends ExpressionNode {
         this.argumentListTail = null;
         this.expression = null;
     }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitArgumentListTail(this);
+    }
 }
 
 class LValueTail extends ExpressionNode {
@@ -301,6 +379,9 @@ class LValueTail extends ExpressionNode {
     public LValueTail() {
         this.pokemonField = null;
     }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitLValueTail(this);
+    }
 }
 
 class PokemonField extends ExpressionNode {
@@ -308,6 +389,20 @@ class PokemonField extends ExpressionNode {
 
     public PokemonField(String pokemonField) {
         this.pokemonField = pokemonField;
+    }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitPokemonField(this);
+    }
+}
+
+
+class ElseIfList extends ExpressionNode {
+    public final List<StatementNode> elseList;
+    public ElseIfList(List<StatementNode> elseList) {
+        this.elseList = elseList;
+    }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitElseIfList(this);
     }
 }
 
@@ -337,6 +432,9 @@ class StatementTail extends ExpressionNode {
         this.node3 = expression;
         this.identifier = null;
     }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitStatementTail(this);
+    }
 }
 
 class MoveKeyword extends ExpressionNode {
@@ -348,6 +446,9 @@ class MoveKeyword extends ExpressionNode {
 
     public MoveKeyword() {
         this.moveKeyword = null;
+    }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitMoveKeyword(this);
     }
 }
 
@@ -372,6 +473,9 @@ class LValueNode extends ExpressionNode {
         this.base = base;
         this.field = null;
     }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitLValue(this);
+    }
 }
 
 class StringLiteral extends ExpressionNode {
@@ -379,6 +483,9 @@ class StringLiteral extends ExpressionNode {
 
     public StringLiteral(String string) {
         this.string = string;
+    }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitStringLiteral(this);
     }
 }
 
@@ -390,6 +497,9 @@ class ForInit extends ExpressionNode {
         this.identifier = identifier;
         this.expression = expression;
     }
+    public <T> T visit(ASTVisitor<T> visitor){
+        return visitor.visitForInit(this);
+    }
 }
 
 class ForUpdate extends ExpressionNode {
@@ -397,6 +507,9 @@ class ForUpdate extends ExpressionNode {
 
     public ForUpdate(String identifier) {
         this.identifier = identifier;
+    }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitForUpdate(this);
     }
 }
 
@@ -410,13 +523,16 @@ class ReturnType extends ExpressionNode {
     public ReturnType() {
         this.type = null;
     }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitReturnType(this);
+    }
 }
 
 class ParamaterList extends ExpressionNode {
     public final ExpressionNode type;
-    public final List<ExpressionNode> expressionListTail;
+    public final ExpressionNode expressionListTail;
 
-    public ParamaterList(ExpressionNode type, List<ExpressionNode> expressionListTail) {
+    public ParamaterList(ExpressionNode type, ExpressionNode expressionListTail) {
         this.type = type;
         this.expressionListTail = expressionListTail;
     }
@@ -424,6 +540,19 @@ class ParamaterList extends ExpressionNode {
     public ParamaterList() {
         this.type = null;
         this.expressionListTail = null;
+    }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitParameterList(this);
+    }
+}
+
+class ExpressionListTail extends ExpressionNode {
+    public final List<ExpressionNode> expressionList;
+    public ExpressionListTail(List<ExpressionNode> expressionList) {
+        this.expressionList = expressionList;
+    }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitExpressionListTail(this);
     }
 }
 
@@ -434,5 +563,8 @@ class Parameter extends ExpressionNode {
     public Parameter(String type, String identifier) {
         this.type = type;
         this.identifier = identifier;
+    }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitParameter(this);
     }
 }

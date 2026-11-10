@@ -10,34 +10,306 @@ public class PrintVisitor implements ASTVisitor<Object> {
 		for (StatementNode stmt : node.statements) {
 			statementNumber++;
 			System.out.println("Visiting Statement " + statementNumber);
-            stmt.visit(this);
+			stmt.visit(this);
         }
         return null;
 	}
+
 	
 	//another example for variable declaration visitor
 	@Override
 	public Object visitVariableDeclaration(VariableDeclarationNode node) {
 		
 		
-		String expression = (String) node.expression.visit(this);
-		String output = "Create a new variable: " + node.name + " Type: " + node.type + " Value: " + expression;
-		System.out.println(output);
 		
-		return output;
+		System.out.print("Create a new variable: " + node.name + " Type: " + node.type + " Value: ");
+		node.expression.visit(this);
+		System.out.println();
+		
+		
+		return null;
 	}
 	@Override
 	public Object visitPokemonLoadStatement(PokemonLoadStatement node){
-		String stringLiteral = (String) node.stringLiteral.visit(this);
-		String output = "Pokemon created named: " + node.identifier + " built off of file: " + stringLiteral;
-		return output;
+		System.out.print("Pokemon created named: " + node.identifier + " built off of file: ");
+		node.stringLiteral.visit(this);
+		System.out.println();
+		return null;
+	}
+	public Object visitStatementNodeTail(StatementNodeTail node) {
+		System.out.print(node.identifier + " has this happen:");
+		node.statementTail.visit(this);
+		System.out.println();
+		return null;
+	}
+	public Object visitStatementTail(StatementTail node) {
+		node.node1.visit(this);
+		node.node2.visit(this);
+		System.out.print(" identifier: " + node.identifier);
+		node.node3.visit(this);
+		return null;
+	}
+	public Object visitMoveKeyword(MoveKeyword node) {
+		System.out.print(" " + node.moveKeyword + " ");
+		return null;
+	}
+	public Object visitLValue(LValueNode node) {
+		System.out.print(" " + node.base + " " + node.field);
+		return null;
+	}
+	
+	public Object visitArgumentList(ArgumentList node) {
+		node.expressionNode.visit(this);
+		node.argumentListTail.visit(this);
+		return null;
+	}
+	public Object visitArgumentListTail(ArgumentListTail node) {
+		System.out.print(" , ");
+		node.expression.visit(this);
+		node.argumentListTail.visit(this);
+		return null;
 	}
 
 	public Object visitSpellDatabaseStatement(SpellDatabaseStatement node){
-		String stringLiteral = (String) node.stringLiteral.visit(this);
-		String output = "Spell Database grabbed from: " + stringLiteral;
-		return output;
+		System.out.print("Spell Database grabbed from:");
+		node.stringLiteral.visit(this);
+		System.out.println();
+		return null;
 	}
+	public Object visitStringLiteral(StringLiteral node) {
+		System.out.print(" " + node.string);
+		return null;
+	}
+
+	public Object visitExpressionExpressionNode(expressionExpressionNode node) {
+			String expression = (String) node.or.visit(this);
+			return expression;
+	}
+	
+	public Object visitLogicalOr(LogicalOr node) {
+		node.left.visit(this);
+		node.right.visit(this);
+		return null; 
+	}
+	public Object visitLogicalOrTail(LogicalOrTail node){
+		System.out.print(" or");
+		node.left.visit(this);
+		node.left.visit(this);
+		return null;
+	}
+	public Object visitLogicalAnd(LogicalAnd node) {
+		node.left.visit(this);
+		node.right.visit(this);
+		return null;
+	}
+	public Object visitLogicalAndTail(LogicalAndTail node) {
+		System.out.print(" and");
+		node.equalityExpressionNode.visit(this);
+		node.logicalAndTail.visit(this);
+		return null;
+	}	
+	public Object visitEqualityExpression(EqualityExpression node) {
+		node.relationalExpression.visit(this);
+		return null;
+	}
+	public Object visitRelationalExpression(RelationalExpression node) {
+		node.additiveExpression.visit(this);
+		node.relationalExpressionTail.visit(this);
+		return null;
+	}
+	public Object visitRelationalExpressionTail(RelationalExpressionTail node) {
+		System.out.println(" " + node.relation);
+		node.additiveExpression.visit(this);
+		return null;
+	}
+	public Object visitAdditiveExpression(AdditiveExpression node) {
+		node.multiplicativeExpression.visit(this);
+		node.additiveExpressionTail.visit(this);
+		return null;
+	}
+	public Object visitAdditiveExpressionTail(AdditiveExpressionTail node) {
+		System.out.println(" +");
+		node.multiplicativeExpression.visit(this);
+		node.additiveExpressionTail.visit(this);
+		return null;
+	}
+	public Object visitMultiplicativeExpression(MultiplicativeExpression node) {
+		node.unaryExpression.visit(this);
+		node.multiplicativeExpressionTail.visit(this);
+		return null;
+	}
+	public Object visitMultiplicativeExpressionTail(MultiplicativeExpressionTail node) {
+		System.out.println(" " + node.symbol);
+		node.unaryExpression.visit(this);
+		node.multiplicativeExpressionTail.visit(this);
+		return null;
+	}
+	public Object visitUnaryExpression(UnaryExpression node) {
+		System.out.print(" " + node.negativeSymbol);
+		node.unaryExpression.visit(this);
+		node.primaryExpression.visit(this);
+		return null;
+	}
+	public Object visitPrimaryExpression(PrimaryExpression node) {
+		System.out.print(" (");
+		node.expressionNode.visit(this);
+		System.out.print(")");
+		node.literalExpression.visit(this);
+		System.out.print(node.identifier);
+		node.primaryExpressionSuffix.visit(this);
+		return null;
+	}
+	public Object visitPrimaryExpressionSuffix(PrimaryExpressionSuffix node) {
+		node.node.visit(this);
+		return null;
+	}
+	public Object visitLValueTail(LValueTail node) {
+		node.pokemonField.visit(this);
+		return null;
+	}
+	public Object visitPokemonField(PokemonField node) {
+		System.out.print(node.pokemonField + " off of pokemon field node");
+		return null;
+	}
+	public Object visitLiteralNode(LiteralNode node) {
+		System.out.print(node.value);
+		node.expression.visit(this);
+		return null;
+	}
+	public Object visitIntegerNode(IntegerNode node) {
+		System.out.print(node.string);
+		node.expression.visit(this);
+		return null;
+	}
+
+	public Object visitPrintStatement(PrintStatement node) {
+		System.out.print("Printing statement: ");
+		node.expression.visit(this);
+		System.out.println();
+		return null;
+	}
+
+	public Object visitIfStatement(IfStatement node) {
+		System.out.print("If statement: if (");
+		node.condition.visit(this);
+		System.out.print(" then:");
+		node.block.visit(this);
+		node.elseIfStatements.visit(this);
+		node.elseStatements.visit(this);
+		System.out.println();
+		return null;
+	}
+	public Object visitElseIfStatement(ElseIfStatement node) {
+		System.out.print(" Else if:");
+		node.expression.visit(this);
+		System.out.print(" Then:");
+		node.statements.visit(this);
+		return null;
+	}
+	public Object visitElseClause(ElseClause node) {
+		System.out.print( "Else:");
+		node.block.visit(this);
+		return null;
+	}
+	public Object visitWhileStatement(WhileStatement node) {
+		System.out.print("While: ");
+		node.expression.visit(this);
+		System.out.print(" Do:");
+		node.block.visit(this);
+		System.out.println();
+		return null;
+	}
+
+	public Object visitForStatement(ForStatement node) {
+		System.out.print("For: ");
+		node.forInit.visit(this);
+		System.out.print(" for argument: ");
+		node.expression.visit(this);
+		System.out.print(" for update ");
+		node.forUpdate.visit(this);
+		node.block.visit(this);
+		return null;
+	}
+	public Object visitForInit(ForInit node) {
+		System.out.print(" int: " + node.identifier + " = " + node.expression);
+		return null;
+	}
+	public Object visitForUpdate(ForUpdate node) {
+		System.out.print(node.identifier + "++");
+		return null;
+	}
+
+	public Object visitBlock(BlockExpression node){
+		System.out.print(" {");
+		node.statements.visit(this);
+		return null;
+	}
+	
+
+	public Object visitStatements(Statements node) {
+		for(StatementNode stmt: node.statements){
+			stmt.visit(this);
+		}
+		System.out.print("} ");
+		return null;
+	}
+	
+	public Object visitElseIfList(ElseIfList node) {
+		for(StatementNode stmt: node.elseList){
+			stmt.visit(this);
+		}
+		return null;
+	}
+	public Object visitFunctionStatement(FunctionStatement node) {
+		System.out.print("Function Statement: ");
+		node.returnType.visit(this);
+		System.out.print(" identifier: " + node.identifier);
+		node.parameterList.visit(this);
+		node.block.visit(this);
+		System.out.println();
+		return null;
+	}
+	public Object visitReturnType(ReturnType node) {
+		System.out.print(" " + node.type + " will be returned");
+		return null;
+	}
+	public Object visitParameterList(ParamaterList node) {
+		node.type.visit(this);
+		node.expressionListTail.visit(this);
+		return null;
+	}
+	public Object visitParameter(Parameter node) {
+		System.out.print(" "+ node.identifier + " of type: " + node.type);
+		return null;
+	}
+	public Object visitExpressionListTail(ExpressionListTail node) {
+		for(ExpressionNode expr: node.expressionList) {
+			expr.visit(this);
+		}
+		return null;
+	}
+
+	
+	public Object visitShowStatement(ShowStatement node){
+		System.out.println("Show pokemon named: " + node.identifier);
+		return null;
+	}
+	public Object visitBreakStatement(BreakStatement node) {
+		System.out.println("Break Statement Called");
+		return null;
+	}
+	public Object visitContinueStatement(ContinueStatement node) {
+		System.out.println("Continue Statement Called");
+		return null;
+	}
+
+	public Object visitReturnStatement(ReturnStatement node) {
+		System.out.print("Return: ");
+		node.expression.visit(this);
+		System.out.println();
+		return null;
+	}
+	
 	//....more visitors for different nodes....
 	//about 250 lines of code here
 

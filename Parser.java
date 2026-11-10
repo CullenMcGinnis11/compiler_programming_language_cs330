@@ -91,12 +91,12 @@ public class Parser {
         return program;
     }
 
-    private List<StatementNode> parseStatements() {
+    private ExpressionNode parseStatements() {
         List<StatementNode> statements = new ArrayList<>();
         while (!atEnd() && !checkTokenValue("}")) {
             statements.add(parseStatement());
         }
-        return statements;
+        return new Statements(statements);
     }
 
     // function to parse each statement
@@ -147,8 +147,8 @@ public class Parser {
             match("(");
             ExpressionNode expression = parseExpression();
             match(")");
-            List<StatementNode> block = parseBlock();
-            List<StatementNode> elseIfListNode = parseElseIfList();
+            ExpressionNode block = parseBlock();
+            ExpressionNode elseIfListNode = parseElseIfList();
             StatementNode elseClauseNode = parseElseClause();
             return new IfStatement(expression, block, elseIfListNode, elseClauseNode);
         } else if (checkTokenValue("while")) {
@@ -156,7 +156,7 @@ public class Parser {
             match("(");
             ExpressionNode expression = parseExpression();
             match(")");
-            List<StatementNode> block = parseBlock();
+            ExpressionNode block = parseBlock();
             return new WhileStatement(expression, block);
         } else if (checkTokenValue("for")) {
             match("for");
@@ -167,7 +167,7 @@ public class Parser {
             match(";");
             ExpressionNode forUpdateNode = parseForUpdate();
             match(")");
-            List<StatementNode> blockNode = parseBlock();
+            ExpressionNode blockNode = parseBlock();
             return new ForStatement(forInitializeNode, expression, forUpdateNode, blockNode);
         } else if (checkTokenValue("function")) {
             match("function");
@@ -176,7 +176,7 @@ public class Parser {
             match("(");
             ExpressionNode paramaterListNode = parseParamaterList();
             match(")");
-            List<StatementNode> block = parseBlock();
+            ExpressionNode block = parseBlock();
             return new FunctionStatement(returnTypeNode, identifier, paramaterListNode, block);
         } else if (checkTokenValue("break")) {
             match("break");
@@ -203,7 +203,7 @@ public class Parser {
                 || checkTokenValue("boolean")
                 || checkTokenValue("Pokemon")) {
             ExpressionNode parameter = parseParamater();
-            List<ExpressionNode> parameterListTailNode = parseParamaterListTail();
+            ExpressionNode parameterListTailNode = parseParamaterListTail();
             return new ParamaterList(parameter, parameterListTailNode);
         } else {
             return new ParamaterList();
@@ -216,14 +216,14 @@ public class Parser {
         return new Parameter(type, identifier);
     }
 
-    private List<ExpressionNode> parseParamaterListTail() {
+    private ExpressionNode parseParamaterListTail() {
         List<ExpressionNode> paramaterListTail = new ArrayList<>();
         while (checkTokenValue(",")) {
             match(",");
             ExpressionNode parameter = parseParamater();
             paramaterListTail.add(parameter);
         }
-        return paramaterListTail;
+        return new ExpressionListTail(paramaterListTail);
     }
 
     private ExpressionNode parseReturnType() {
@@ -256,32 +256,32 @@ public class Parser {
         return new ForInit(identifier, expression);
     }
 
-    private List<StatementNode> parseBlock() {
+    private ExpressionNode parseBlock() {
         match("{");
-        List<StatementNode> statements = parseStatements();
+        ExpressionNode statements = parseStatements();
         match("}");
-        return statements;
+        return new BlockExpression(statements);
     }
 
-    private List<StatementNode> parseElseIfList() {
+    private ExpressionNode parseElseIfList() {
         List<StatementNode> elseIfList = new ArrayList<>();
         while (checkTokenValue("elseif")) {
             pop();
             match("(");
             ExpressionNode expression = parseExpression();
             match(")");
-            List<StatementNode> block = parseBlock();
+            ExpressionNode block = parseBlock();
             StatementNode elseIfStatementNode = new ElseIfStatement(expression, block);
             elseIfList.add(elseIfStatementNode);
 
         }
-        return elseIfList;
+        return new ElseIfList(elseIfList);
     }
 
     private StatementNode parseElseClause() {
         if (checkTokenValue("else")) {
             pop();
-            List<StatementNode> block = parseBlock();
+            ExpressionNode block = parseBlock();
             return new ElseClause(block);
         } else {
             return new ElseClause();

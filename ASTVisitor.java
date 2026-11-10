@@ -22,7 +22,6 @@ public interface ASTVisitor<T> {
 
 
     // Expressions
-    T visitBinaryExpression(BinaryExprNode node);
     T visitLValue(LValueNode node);
     T visitLogicalOr(LogicalOr node);
     T visitExpressionExpressionNode(expressionExpressionNode node);
@@ -51,7 +50,11 @@ public interface ASTVisitor<T> {
     T visitForInit(ForInit node);
     T visitForUpdate(ForUpdate node);
     T visitReturnType(ReturnType node);
-    T visitParamaterList(ParamaterList node);
+    T visitParameterList(ParamaterList node);
     T visitParameter(Parameter node);
+    T visitBlock(BlockExpression node);
+    T visitStatements(Statements node);
+    T visitElseIfList(ElseIfList node);
+    T visitExpressionListTail(ExpressionListTail node);
     
 }
