@@ -274,7 +274,8 @@ public class PrintVisitor implements ASTVisitor<Object> {
 	}
 
 	public Object visitForInit(ForInit node) {
-		System.out.print(" int: " + node.identifier + " = " + node.expression);
+		System.out.print(" int: " + node.identifier + " =");
+		node.expression.visit(this);
 		return null;
 	}
 
@@ -293,7 +294,6 @@ public class PrintVisitor implements ASTVisitor<Object> {
 		for (StatementNode stmt : node.statements) {
 			stmt.visit(this);
 		}
-		System.out.print("");
 		return null;
 	}
 
