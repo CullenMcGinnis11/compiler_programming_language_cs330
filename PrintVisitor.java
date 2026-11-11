@@ -1,5 +1,10 @@
 public class PrintVisitor implements ASTVisitor<Object> {
 	// an example for programvisitor
+	public boolean instanceOfNull(ExpressionNode node) {
+		return node instanceof NullValue;
+	}
+
+	// TODO: issues with parenthesis in expression statements
 	@Override
 	public Object visitProgram(ProgramNode node) {
 		int statementNumber = 0;
@@ -14,11 +19,9 @@ public class PrintVisitor implements ASTVisitor<Object> {
 	// another example for variable declaration visitor
 	@Override
 	public Object visitVariableDeclaration(VariableDeclarationNode node) {
-
-		System.out.print("Create a new variable: " + node.name + " Type: " + node.type + " Value: ");
+		System.out.print("Create a new variable named " + node.name + " type: " + node.type + " value: ");
 		node.expression.visit(this);
 		System.out.println();
-
 		return null;
 	}
 
@@ -63,9 +66,11 @@ public class PrintVisitor implements ASTVisitor<Object> {
 	}
 
 	public Object visitArgumentListTail(ArgumentListTail node) {
-		System.out.print(" , ");
-		node.expression.visit(this);
-		node.argumentListTail.visit(this);
+		if (!instanceOfNull(node.expression)) {
+			System.out.print(",");
+			node.expression.visit(this);
+			node.argumentListTail.visit(this);
+		}
 		return null;
 	}
 
@@ -98,7 +103,6 @@ public class PrintVisitor implements ASTVisitor<Object> {
 			node.left.visit(this);
 			node.right.visit(this);
 		}
-
 		return null;
 	}
 
@@ -114,7 +118,6 @@ public class PrintVisitor implements ASTVisitor<Object> {
 			node.equalityExpressionNode.visit(this);
 			node.logicalAndTail.visit(this);
 		}
-
 		return null;
 	}
 
@@ -139,10 +142,6 @@ public class PrintVisitor implements ASTVisitor<Object> {
 		node.multiplicativeExpression.visit(this);
 		node.additiveExpressionTail.visit(this);
 		return null;
-	}
-
-	public boolean instanceOfNull(ExpressionNode node) {
-		return node instanceof NullValue;
 	}
 
 	public Object visitAdditiveExpressionTail(AdditiveExpressionTail node) {
@@ -171,7 +170,6 @@ public class PrintVisitor implements ASTVisitor<Object> {
 			node.unaryExpression.visit(this);
 			node.multiplicativeExpressionTail.visit(this);
 		}
-
 		return null;
 	}
 
@@ -201,7 +199,7 @@ public class PrintVisitor implements ASTVisitor<Object> {
 	}
 
 	public Object visitPokemonField(PokemonField node) {
-		System.out.print(node.pokemonField + " "); //TODO: hello look at me!
+		System.out.print(node.pokemonField + " "); // TODO: hello look at me!
 		return null;
 	}
 
@@ -228,7 +226,7 @@ public class PrintVisitor implements ASTVisitor<Object> {
 	}
 
 	public Object visitIfStatement(IfStatement node) {
-		System.out.print("If statement: if (");
+		System.out.print("if (");
 		node.condition.visit(this);
 		System.out.print(" then:");
 		node.block.visit(this);
@@ -247,11 +245,11 @@ public class PrintVisitor implements ASTVisitor<Object> {
 	}
 
 	public Object visitElseClause(ElseClause node) {
-		if (!instanceOfNull(node.block)){
+		if (!instanceOfNull(node.block)) {
 			System.out.print("Else:");
-		node.block.visit(this);
+			node.block.visit(this);
 		}
-		
+
 		return null;
 	}
 
@@ -286,7 +284,7 @@ public class PrintVisitor implements ASTVisitor<Object> {
 	}
 
 	public Object visitBlock(BlockExpression node) {
-		System.out.print(" {");
+		System.out.print("");
 		node.statements.visit(this);
 		return null;
 	}
@@ -295,7 +293,7 @@ public class PrintVisitor implements ASTVisitor<Object> {
 		for (StatementNode stmt : node.statements) {
 			stmt.visit(this);
 		}
-		System.out.print("} ");
+		System.out.print("");
 		return null;
 	}
 

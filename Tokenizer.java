@@ -100,7 +100,7 @@ public class Tokenizer {
 										.concat(Character.toString((char) nextChar))));
 								continue;
 							} else {
-								System.out.println("+ found but nothing else after");
+								// System.out.println("+ found but nothing else after");
 								tokens.add(new Token("Operator", Character.toString((char) character)));
 								secondCharNotUsed = true;
 
