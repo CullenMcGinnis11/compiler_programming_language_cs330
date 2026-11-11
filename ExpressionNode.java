@@ -54,8 +54,8 @@ class LogicalOrTail extends ExpressionNode {
     }
 
     public LogicalOrTail() {
-        this.left = null;
-        this.right = null;
+        this.left =new NullValue();
+        this.right = new NullValue();
     }
     public <T> T visit(ASTVisitor<T> visitor) {
         return visitor.visitLogicalOrTail(this);
@@ -85,8 +85,8 @@ class LogicalAndTail extends ExpressionNode {
     }
 
     public LogicalAndTail() {
-        this.equalityExpressionNode = null;
-        this.logicalAndTail = null;
+        this.equalityExpressionNode = new NullValue();
+        this.logicalAndTail = new NullValue();
     }
     public <T> T visit(ASTVisitor<T> visitor) {
         return visitor.visitLogicalAndTail(this);
@@ -127,8 +127,8 @@ class RelationalExpressionTail extends ExpressionNode {
     }
 
     public RelationalExpressionTail() {
-        this.relation = null;
-        this.additiveExpression = null;
+        this.relation = "";
+        this.additiveExpression = new NullValue();
     }
     public <T> T visit(ASTVisitor<T> visitor) {
         return visitor.visitRelationalExpressionTail(this);
@@ -179,9 +179,9 @@ class AdditiveExpressionTail extends ExpressionNode {
     }
 
     public AdditiveExpressionTail() {
-        this.symbol = null;
-        this.multiplicativeExpression = null;
-        this.additiveExpressionTail = null;
+        this.symbol = "";
+        this.multiplicativeExpression = new NullValue();
+        this.additiveExpressionTail = new NullValue();
     }
     public <T> T visit(ASTVisitor<T> visitor) {
         return visitor.visitAdditiveExpressionTail(this);
@@ -214,9 +214,9 @@ class MultiplicativeExpressionTail extends ExpressionNode {
     }
 
     public MultiplicativeExpressionTail() {
-        this.symbol = null;
-        this.unaryExpression = null;
-        this.multiplicativeExpressionTail = null;
+        this.symbol = "";
+        this.unaryExpression = new NullValue();
+        this.multiplicativeExpressionTail = new NullValue();
     }
     public <T> T visit(ASTVisitor<T> visitor) {
         return visitor.visitMultiplicativeExpressionTail(this);
@@ -231,13 +231,13 @@ class UnaryExpression extends ExpressionNode {
     public UnaryExpression(String negativeSymbol, ExpressionNode unaryExpression) {
         this.negativeSymbol = negativeSymbol;
         this.unaryExpression = unaryExpression;
-        this.primaryExpression = null;
+        this.primaryExpression = new NullValue();
     }
 
     public UnaryExpression(ExpressionNode primaryExpression) {
         this.primaryExpression = primaryExpression;
-        this.negativeSymbol = null;
-        this.unaryExpression = null;
+        this.negativeSymbol = "";
+        this.unaryExpression = new NullValue();
     }
     public <T> T visit(ASTVisitor<T> visitor) {
         return visitor.visitUnaryExpression(this);
@@ -252,30 +252,30 @@ class PrimaryExpression extends ExpressionNode {
 
     public PrimaryExpression(ExpressionNode literalExpression) {
         this.literalExpression = literalExpression;
-        this.primaryExpressionSuffix = null;
-        this.identifier = null;
-        this.expressionNode = null;
+        this.primaryExpressionSuffix = new NullValue();
+        this.identifier = "";
+        this.expressionNode = new NullValue();
     }
 
     public PrimaryExpression(String identifier, ExpressionNode primaryExpressionSuffix) {
         this.identifier = identifier;
         this.primaryExpressionSuffix = primaryExpressionSuffix;
-        this.literalExpression = null;
-        this.expressionNode = null;
+        this.literalExpression = new NullValue();
+        this.expressionNode = new NullValue();
     }
 
     public PrimaryExpression(ExpressionNode expressionNode, String dummyString) {
         this.expressionNode = expressionNode;
-        this.primaryExpressionSuffix = null;
-        this.literalExpression = null;
-        this.identifier = null;
+        this.primaryExpressionSuffix = new NullValue();
+        this.literalExpression = new NullValue();
+        this.identifier = "";
     }
 
     public PrimaryExpression() {
-        this.expressionNode = null;
-        this.primaryExpressionSuffix = null;
-        this.literalExpression = null;
-        this.identifier = null;
+        this.expressionNode = new NullValue();
+        this.primaryExpressionSuffix = new NullValue();
+        this.literalExpression = new NullValue();
+        this.identifier = "";
     }
     public <T> T visit(ASTVisitor<T> visitor) {
         return visitor.visitPrimaryExpression(this);
@@ -288,11 +288,11 @@ class LiteralNode extends ExpressionNode {
 
     public LiteralNode(String value) {
         this.value = value;
-        this.expression = null;
+        this.expression = new NullValue();
     }
 
     public LiteralNode(ExpressionNode expression) {
-        this.value = null;
+        this.value = "";
         this.expression = expression;
     }
     public <T> T visit(ASTVisitor<T> visitor) {
@@ -311,7 +311,7 @@ class IntegerNode extends ExpressionNode {
 
     public IntegerNode(String string) {
         this.string = string;
-        this.expression = null; // this
+        this.expression = new NullValue(); // this
     }
     public <T> T visit(ASTVisitor<T> visitor) {
         return visitor.visitIntegerNode(this);
@@ -326,7 +326,7 @@ class PrimaryExpressionSuffix extends ExpressionNode {
     }
 
     public PrimaryExpressionSuffix() {
-        this.node = null;
+        this.node = new NullValue();
     }
     public <T> T visit(ASTVisitor<T> visitor) {
         return visitor.visitPrimaryExpressionSuffix(this);
@@ -338,8 +338,8 @@ class ArgumentList extends ExpressionNode {
     public final ExpressionNode argumentListTail;
 
     public ArgumentList() {
-        this.argumentListTail = null;
-        this.expressionNode = null;
+        this.argumentListTail = new NullValue();
+        this.expressionNode = new NullValue();
     }
 
     public ArgumentList(ExpressionNode expressionNode, ExpressionNode argumentListTail) {
@@ -361,8 +361,8 @@ class ArgumentListTail extends ExpressionNode {
     }
 
     public ArgumentListTail() {
-        this.argumentListTail = null;
-        this.expression = null;
+        this.argumentListTail = new NullValue();
+        this.expression = new NullValue();
     }
     public <T> T visit(ASTVisitor<T> visitor) {
         return visitor.visitArgumentListTail(this);
@@ -377,7 +377,7 @@ class LValueTail extends ExpressionNode {
     }
 
     public LValueTail() {
-        this.pokemonField = null;
+        this.pokemonField = new NullValue();
     }
     public <T> T visit(ASTVisitor<T> visitor) {
         return visitor.visitLValueTail(this);
@@ -414,23 +414,23 @@ class StatementTail extends ExpressionNode {
 
     public StatementTail(ExpressionNode argumentList) {
         this.node1 = argumentList;
-        this.node2 = null;
-        this.identifier = null;
-        this.node3 = null;
+        this.node2 = new NullValue();
+        this.identifier = "";
+        this.node3 = new NullValue();
     }
 
     public StatementTail(ExpressionNode keywordNode, String identifier) {
         this.identifier = identifier;
         this.node1 = keywordNode;
-        this.node2 = null;
-        this.node3 = null;
+        this.node2 = new NullValue();
+        this.node3 = new NullValue();
     }
 
     public StatementTail(ExpressionNode lValue, ExpressionNode assignemntOperator, ExpressionNode expression) {
         this.node1 = lValue;
         this.node2 = assignemntOperator;
         this.node3 = expression;
-        this.identifier = null;
+        this.identifier = "";
     }
     public <T> T visit(ASTVisitor<T> visitor) {
         return visitor.visitStatementTail(this);
@@ -445,7 +445,7 @@ class MoveKeyword extends ExpressionNode {
     }
 
     public MoveKeyword() {
-        this.moveKeyword = null;
+        this.moveKeyword = "";
     }
     public <T> T visit(ASTVisitor<T> visitor) {
         return visitor.visitMoveKeyword(this);
@@ -471,7 +471,7 @@ class LValueNode extends ExpressionNode {
                                      // May not need to use this as field would already be set to null in other
                                      // constructor statment
         this.base = base;
-        this.field = null;
+        this.field = "";
     }
     public <T> T visit(ASTVisitor<T> visitor) {
         return visitor.visitLValue(this);
@@ -538,8 +538,8 @@ class ParamaterList extends ExpressionNode {
     }
 
     public ParamaterList() {
-        this.type = null;
-        this.expressionListTail = null;
+        this.type = new NullValue();
+        this.expressionListTail = new NullValue();
     }
     public <T> T visit(ASTVisitor<T> visitor) {
         return visitor.visitParameterList(this);
@@ -566,5 +566,13 @@ class Parameter extends ExpressionNode {
     }
     public <T> T visit(ASTVisitor<T> visitor) {
         return visitor.visitParameter(this);
+    }
+}
+class NullValue extends ExpressionNode {
+    public NullValue(){
+
+    }
+    public <T> T visit(ASTVisitor<T> visitor) {
+        return visitor.visitNullExpression(this);
     }
 }

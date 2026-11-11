@@ -56,5 +56,6 @@ public interface ASTVisitor<T> {
     T visitStatements(Statements node);
     T visitElseIfList(ElseIfList node);
     T visitExpressionListTail(ExpressionListTail node);
+    T visitNullExpression(NullValue node);
     
 }

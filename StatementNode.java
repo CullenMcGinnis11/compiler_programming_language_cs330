@@ -132,7 +132,7 @@ class ElseClause extends StatementNode {
     }
 
     public ElseClause() {
-        this.block = null;
+        this.block = new NullValue();
     }
     public <T> T visit(ASTVisitor<T> visitor){
         return visitor.visitElseClause(this);
